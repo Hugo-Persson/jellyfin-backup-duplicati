@@ -11,10 +11,32 @@ systemctl stop jellyfin
 URL="$(cat ./backup-url.txt)"
 DUPLICATI_PASSPHRASE="$(cat ./duplicati-passphrase.txt)"
 
-duplicati-cli backup "$URL" \
+output=$(duplicati-cli backup "$URL" \
   "/var/lib/jellyfin" \
   "/etc/jellyfin" \
   --dblock-size=50mb \
   --backup-name="jellyfin" \
   --passphrase="$DUPLICATI_PASSPHRASE" \
-  --retention-policy="1W:1D,4W:1W,12M:1M"
+  --retention-policy="1W:1D,4W:1W,12M:1M" | tail -n 10)
+
+discord_url="$(cat ./discord-url.txt)"
+
+# Define a function to send a message
+send_discord_notification() {
+  local message=$1
+
+  # Construct payload
+  local payload=$(
+    cat <<EOF
+{
+  "content": "$message"
+}
+EOF
+  )
+
+  # Send POST request to Discord Webhook
+  curl -H "Content-Type: application/json" -X POST -d "$payload" $discord_url
+}
+
+echo "Done: $output"
+send_discord_notification "$output"
