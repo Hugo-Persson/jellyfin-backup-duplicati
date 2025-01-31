@@ -25,14 +25,8 @@ discord_url="$(cat ./discord-url.txt)"
 send_discord_notification() {
   local message=$1
 
-  # Construct payload
-  local payload=$(
-    cat <<EOF
-{
-  "content": "$message"
-}
-EOF
-  )
+  # Construct payload using jq for proper JSON escaping
+  local payload=$(jq -n --arg content "$message" '{"content": $content}')
 
   # Send POST request to Discord Webhook
   curl -H "Content-Type: application/json" -X POST -d "$payload" $discord_url
