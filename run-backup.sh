@@ -17,7 +17,7 @@ output=$(duplicati-cli backup "$URL" \
   --dblock-size=50mb \
   --backup-name="jellyfin" \
   --passphrase="$DUPLICATI_PASSPHRASE" \
-  --retention-policy="1W:1D,4W:1W,12M:1M" | tail -n 10)
+  --retention-policy="1W:1D,4W:1W,12M:1M" | tee /dev/tty | tail -n 10)
 
 discord_url="$(cat ./discord-url.txt)"
 
