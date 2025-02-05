@@ -6,6 +6,9 @@ cleanup() {
 
 # Run cleanup function on EXIT
 trap cleanup EXIT
+# CD to the directory of the script
+
+cd "$(dirname "$0")" || exit
 
 discord_url="$(cat ./discord-url.txt)"
 
